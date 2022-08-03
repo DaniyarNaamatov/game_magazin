@@ -8,6 +8,7 @@
 2. Django Rest Framework
 3. Postgres
 4. SimpleJWT
+5. Djoser
 
 
 
