@@ -1,0 +1,32 @@
+version: "3.10"
+
+services:
+  test_db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      DATABASE_PORT: 5432
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    restart: always
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic
+        --no-input && gunicorn -b 0.0.0.0:8000 main.wsgi --reload"
+    volumes:
+      - .:/app
+      - ./static:/static
+    ports:
+      - 8000:8000
+    depends_on:
+      - test_db
+
+volumes:
+  postgres_data:
